@@ -3,9 +3,10 @@
   "description": "Новый флагман с невероятным экраном",
   "processor": "Snapdragon 8 Elite",
   "price": "40 000 ₽",
+  "telegram": "t.me/kitaiphonchik",
   "colors": [
-    {"name": "Black", "code": "#1a1a1a", "image": "render_black.png"},
-    {"name": "White", "code": "#ffffff", "image": "render_white.png"},
-    {"name": "Blue", "code": "#1e3a8a", "image": "render_blue.png"}
+    {"name": "Black", "code": "#1a1a1a", "image": "render_black.png", "price": "55 000 ₽"},
+    {"name": "White", "code": "#ffffff", "image": "render_white.png", "price": "40 000 ₽"}
+    {"name": "Blue", "code": "#1e3a8a", "image": "render_blue.png", "price": "40 000 ₽"}
   ]
 }
