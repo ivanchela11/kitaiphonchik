@@ -1,0 +1,11 @@
+{
+  "name": "OnePlus 13",
+  "description": "Новый флагман с невероятным экраном",
+  "processor": "Snapdragon 8 Elite",
+  "price": "40 000 ₽",
+  "colors": [
+    {"name": "Black", "code": "#1a1a1a", "image": "render_black.png"},
+    {"name": "White", "code": "#ffffff", "image": "render_white.png"},
+    {"name": "Blue", "code": "#1e3a8a", "image": "render_blue.png"}
+  ]
+}
