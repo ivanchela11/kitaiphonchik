@@ -203,20 +203,33 @@
             background: linear-gradient(135deg, var(--primary-red), #ff6b6b);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            transition: opacity 0.3s;
         }
 
-        .footer-card i {
-            font-size: 1.2rem;
-            padding: 12px;
-            background: var(--primary-red);
+        .telegram-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #0088cc, #229ED9);
             border-radius: 12px;
             cursor: pointer;
             transition: 0.3s;
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            color: white;
+            text-decoration: none;
         }
 
-        .footer-card i:hover {
-            transform: translateX(5px);
-            box-shadow: 0 0 20px rgba(255, 42, 42, 0.5);
+        .telegram-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(34, 158, 217, 0.4);
+            background: linear-gradient(135deg, #229ED9, #0088cc);
+        }
+
+        .telegram-btn i {
+            font-size: 1.2rem;
         }
 
         /* Background Blobs - Enhanced */
@@ -279,12 +292,25 @@
     </section>
 
     <script>
-        // Список папок с телефонами
-        const phoneFolders = ['OnePlus 13'];
+        // Автоматически загружаем список телефонов из папки Phones
+        async function getPhoneFolders() {
+            try {
+                // Попытка получить список через index.json в папке phones
+                const response = await fetch('phones/index.json');
+                const data = await response.json();
+                return data.folders || [];
+            } catch (err) {
+                console.error('Не удалось загрузить список телефонов:', err);
+                // Fallback на стандартный список
+                return ['oneplus13', 'xiaomi14', 'redmagic9'];
+            }
+        }
 
         async function loadCatalog() {
             const container = document.getElementById('product-list');
             container.innerHTML = '';
+
+            const phoneFolders = await getPhoneFolders();
 
             for (const folder of phoneFolders) {
                 try {
@@ -303,13 +329,18 @@
             const div = document.createElement('div');
             div.className = 'glass-panel product-card';
             
-            // Генерируем точки выбора цвета
+            // Генерируем точки выбора цвета с ценами
             let colorDots = data.colors.map((c, index) => 
                 `<div class="color-dot ${index === 0 ? 'active' : ''}" 
                       style="background: ${c.code}" 
-                      onclick="changeColor(this, '${folder}/${c.image}')">
+                      data-price="${c.price || data.price}"
+                      onclick="changeColor(this, '${folder}/${c.image}', '${c.price || data.price}')">
                  </div>`
             ).join('');
+
+            // Получаем Telegram ссылку
+            const telegramLink = data.telegram || 'https://t.me/yourusername';
+            const initialPrice = data.colors[0].price || data.price;
 
             div.innerHTML = `
                 <div class="tags"><span class="tag">${data.processor}</span></div>
@@ -318,14 +349,17 @@
                 <p class="product-desc">${data.description}</p>
                 <div class="color-picker">${colorDots}</div>
                 <div class="footer-card">
-                    <span class="price">${data.price}</span>
-                    <i class="fas fa-arrow-right"></i>
+                    <span class="price" id="price-${folder}">${initialPrice}</span>
+                    <a href="${telegramLink}" target="_blank" class="telegram-btn">
+                        <i class="fab fa-telegram"></i>
+                        Заказать в Telegram
+                    </a>
                 </div>
             `;
             return div;
         }
 
-        function changeColor(el, imgPath) {
+        function changeColor(el, imgPath, newPrice) {
             // Меняем активную точку
             const parent = el.parentElement;
             parent.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
@@ -334,10 +368,20 @@
             // Находим картинку в этой карточке и меняем src
             const card = parent.closest('.product-card');
             const img = card.querySelector('.phone-render');
+            
+            // Находим цену и обновляем её
+            const priceElement = card.querySelector('.price');
+            
             img.style.opacity = '0';
+            priceElement.style.opacity = '0';
+            
             setTimeout(() => {
                 img.src = `phones/${imgPath}`;
+                if (newPrice) {
+                    priceElement.textContent = newPrice;
+                }
                 img.style.opacity = '1';
+                priceElement.style.opacity = '1';
             }, 200);
         }
 
