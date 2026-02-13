@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Китайфончик | Premium Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;500;900&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-red: #ff2a2a;
+            --bg-dark: #0a0a0a;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-dark); color: white; min-height: 100vh; }
+
+        /* --- LOGO STYLE --- */
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 1.8rem;
+            color: white;
+            text-decoration: none;
+        }
+        .logo span { color: var(--primary-red); }
+
+        /* --- GLASS PANEL --- */
+        .glass-panel {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+        }
+
+        /* --- NAV --- */
+        nav {
+            position: fixed;
+            top: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 1200px;
+            padding: 15px 30px; display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+        }
+
+        /* --- CATALOG SECTION --- */
+        .catalog { padding: 120px 5% 50px; max-width: 1200px; margin: 0 auto; }
+        .catalog h2 { font-size: 3rem; margin-bottom: 40px; font-weight: 900; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            padding: 30px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex; flex-direction: column;
+        }
+
+        .product-card:hover { transform: translateY(-10px); border-color: var(--primary-red); }
+
+        .phone-render {
+            width: 100%; height: 250px;
+            object-fit: contain;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 20px 30px rgba(0,0,0,0.5));
+            transition: 0.5s;
+        }
+
+        .tags { display: flex; gap: 10px; margin-bottom: 10px; }
+        .tag { font-size: 0.7rem; padding: 4px 10px; border-radius: 20px; background: rgba(255,255,255,0.1); color: var(--primary-red); font-weight: bold; text-transform: uppercase; }
+
+        .product-name { font-size: 1.8rem; margin-bottom: 5px; }
+        .product-desc { color: #888; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.4; }
+/* Color Selector */
+        .color-picker { display: flex; gap: 12px; margin: 15px 0; }
+        .color-dot {
+            width: 20px; height: 20px; border-radius: 50%;
+            cursor: pointer; border: 2px solid transparent;
+            transition: 0.3s;
+        }
+        .color-dot.active { border-color: white; transform: scale(1.2); }
+
+        .footer-card {
+            margin-top: auto;
+            display: flex; justify-content: space-between; align-items: center;
+            padding-top: 20px; border-top: 1px solid var(--glass-border);
+        }
+        .price { font-size: 1.4rem; font-weight: 900; color: var(--primary-red); }
+
+        /* Background Blobs */
+        .blob {
+            position: fixed; width: 500px; height: 500px; background: radial-gradient(circle, #ff2a2a33, transparent);
+            filter: blur(100px); z-index: -1; animation: move 20s infinite alternate;
+        }
+
+        @keyframes move { from { transform: translate(-10%, -10%); } to { transform: translate(20%, 20%); } }
+    </style>
+</head>
+<body>
+
+    <div class="blob"></div>
+
+    <nav class="glass-panel">
+        <a href="#" class="logo">Китай<span>фончик</span></a>
+        <div style="display:flex; gap: 20px;">
+            <i class="fas fa-shopping-cart"></i>
+            <i class="fas fa-bars"></i>
+        </div>
+    </nav>
+
+    <section class="catalog">
+        <h2>Каталог</h2>
+        <div id="product-list" class="product-grid">
+            <p>Загрузка флагманов...</p>
+        </div>
+    </section>
+
+    <script>
+        // Список папок с телефонами (создай их в репозитории)
+        const phoneFolders = ['oneplus13', 'xiaomi14', 'redmagic9'];
+
+        async function loadCatalog() {
+            const container = document.getElementById('product-list');
+            container.innerHTML = '';
+
+            for (const folder of phoneFolders) {
+                try {
+                    const response = await fetch(phones/${folder}/config.json);
+                    const data = await response.json();
+                    
+                    const card = createCard(data, folder);
+                    container.appendChild(card);
+                } catch (err) {
+                    console.error(Ошибка загрузки ${folder}:, err);
+                }
+            }
+        }
+
+        function createCard(data, folder) {
+            const div = document.createElement('div');
+            div.className = 'glass-panel product-card';
+            
+            // Генерируем точки выбора цвета
+            let colorDots = data.colors.map((c, index) => 
+                <div class="color-dot ${index === 0 ? 'active' : ''}" 
+                      style="background: ${c.code}" 
+                      onclick="changeColor(this, '${folder}/${c.image}')">
+                 </div>
+            ).join('');
+
+            div.innerHTML = 
+                <div class="tags"><span class="tag">${data.processor}</span></div>
+                <img src="phones/${folder}/${data.colors[0].image}" class="phone-render" id="img-${folder}">
+                <h3 class="product-name">${data.name}</h3>
+                <p class="product-desc">${data.description}</p>
+                <div class="color-picker">${colorDots}</div>
+                <div class="footer-card">
+                    <span class="price">${data.price}</span>
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            ;
+            return div;
+        }
+
+        function changeColor(el, imgPath) {
+            // Меняем активную точку
+            const parent = el.parentElement;
+            parent.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+            el.classList.add('active');
+
+            // Находим картинку в этой карточке и меняем src
+            const card = parent.closest('.product-card');
+            const img = card.querySelector('.phone-render');
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = phones/${imgPath};
+                img.style.opacity = '1';
+            }, 200);
+        }
+window.onload = loadCatalog;
+    </script>
+</body>
+</html>
