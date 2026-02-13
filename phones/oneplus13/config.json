@@ -7,6 +7,6 @@
   "colors": [
     {"name": "Black", "code": "#1a1a1a", "image": "render_black.png", "price": "55 000 ₽"},
     {"name": "White", "code": "#ffffff", "image": "render_white.png", "price": "40 000 ₽"},
-    {"name": "Blue", "code": "#1e3a8a", "image": "render_blue.png", "price": "40 000 ₽"}
+    {"name": "Blue", "code": "#1e3a8a", "image": "render_blue.png", "price": "40 000 ₽"},
   ]
 }
